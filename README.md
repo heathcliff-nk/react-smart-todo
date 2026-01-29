@@ -4,9 +4,6 @@
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/your-username/react-smart-todo?style=social)](https://github.com/your-username/react-smart-todo)
 [![Last Commit](https://img.shields.io/github/last-commit/your-username/react-smart-todo)](https://github.com/your-username/react-smart-todo/commits/main)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/your-netlify-id/deploy-status)](https://app.netlify.com/sites/your-site/deploys)
-
-![Smart Todo App Preview](https://via.placeholder.com/800x450/6366f1/ffffff?text=Smart+Todo+App+Screenshot+Here)
 
 > **Современное React-приложение для управления задачами с продвинутым UI/UX. Пет-проект для демонстрации навыков фронтенд-разработки.**
 
