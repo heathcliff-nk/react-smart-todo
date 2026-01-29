@@ -237,7 +237,7 @@ function App() {
     <div className="App">
       <div className="container">
         <header className="header">
-          <h1>✅ React Todo App</h1>
+          <h1>✅ Todo App</h1>
           <p className="subtitle">Управляйте задачами эффективно</p>
         </header>
 
