@@ -1,383 +1,278 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
 import { FaPlus, FaTrash, FaCheckCircle, FaClock, FaListAlt } from 'react-icons/fa';
+import Notification from './components/Notification';
+import './App.css';
 
-// Компонент TodoItem
-const TodoItem = ({ todo, onToggle, onDelete, onEdit }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editText, setEditText] = useState(todo.text);
-
-  const handleSave = () => {
-    if (editText.trim()) {
-      onEdit(todo.id, editText);
-      setIsEditing(false);
-    }
-  };
-
-  const handleCancel = () => {
-    setEditText(todo.text);
-    setIsEditing(false);
-  };
-
-  return (
-    <div className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-      <div 
-        className={`checkbox ${todo.completed ? 'checked' : ''}`}
-        onClick={() => onToggle(todo.id)}
-      >
-        {todo.completed && <span>✓</span>}
-      </div>
-
-      {isEditing ? (
-        <div style={{ display: 'flex', flex: 1, gap: '10px' }}>
-          <input
-            type="text"
-            value={editText}
-            onChange={(e) => setEditText(e.target.value)}
-            style={{
-              flex: 1,
-              padding: '8px 12px',
-              border: '2px solid #4361ee',
-              borderRadius: '8px',
-              fontSize: '1rem'
-            }}
-            autoFocus
-            onKeyPress={(e) => e.key === 'Enter' && handleSave()}
-          />
-          <button onClick={handleSave} style={{ 
-            background: '#2ec4b6', 
-            color: 'white', 
-            border: 'none', 
-            padding: '8px 15px',
-            borderRadius: '8px',
-            cursor: 'pointer'
-          }}>
-            Сохранить
-          </button>
-          <button onClick={handleCancel} style={{ 
-            background: '#8d99ae', 
-            color: 'white', 
-            border: 'none', 
-            padding: '8px 15px',
-            borderRadius: '8px',
-            cursor: 'pointer'
-          }}>
-            Отмена
-          </button>
-        </div>
-      ) : (
-        <>
-          <span 
-            style={{ 
-              flex: 1, 
-              textDecoration: todo.completed ? 'line-through' : 'none',
-              opacity: todo.completed ? 0.7 : 1,
-              cursor: 'pointer'
-            }}
-            onDoubleClick={() => setIsEditing(true)}
-          >
-            {todo.text}
-          </span>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button 
-              onClick={() => setIsEditing(true)}
-              style={{ 
-                background: 'transparent', 
-                border: 'none', 
-                color: '#4361ee',
-                cursor: 'pointer',
-                fontSize: '16px'
-              }}
-            >
-              ✏️
-            </button>
-            <button 
-              onClick={() => onDelete(todo.id)}
-              style={{ 
-                background: 'transparent', 
-                border: 'none', 
-                color: '#e71d36',
-                cursor: 'pointer',
-                fontSize: '16px'
-              }}
-            >
-              🗑️
-            </button>
-          </div>
-        </>
-      )}
-    </div>
-  );
-};
-
-// Компонент AddTodoForm
-const AddTodoForm = ({ onAdd }) => {
-  const [text, setText] = useState('');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (text.trim()) {
-      onAdd(text);
-      setText('');
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Что нужно сделать?"
-          style={{
-            flex: 1,
-            padding: '12px 16px',
-            border: '2px solid #ddd',
-            borderRadius: '8px',
-            fontSize: '1rem'
-          }}
-        />
-        <button 
-          type="submit"
-          style={{
-            background: '#4361ee',
-            color: 'white',
-            border: 'none',
-            padding: '12px 24px',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-        >
-          <FaPlus /> Добавить
-        </button>
-      </div>
-      <div style={{ color: '#666', fontSize: '0.9rem' }}>
-        💡 Нажмите Enter для быстрого добавления
-      </div>
-    </form>
-  );
-};
-
-// Главный компонент App
 function App() {
   const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState('');
   const [filter, setFilter] = useState('all');
+  const [theme, setTheme] = useState('light');
+  const [notification, setNotification] = useState(null);
 
   // Загрузка из localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('react-todos');
-    if (saved) {
-      setTodos(JSON.parse(saved));
-    }
+    const savedTodos = localStorage.getItem('todos');
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTodos) setTodos(JSON.parse(savedTodos));
+    if (savedTheme) setTheme(savedTheme);
   }, []);
 
   // Сохранение в localStorage
   useEffect(() => {
-    localStorage.setItem('react-todos', JSON.stringify(todos));
-  }, [todos]);
+    localStorage.setItem('todos', JSON.stringify(todos));
+    localStorage.setItem('theme', theme);
+  }, [todos, theme]);
+
+  // Функции для уведомлений
+  const showNotification = (message, type = 'info') => {
+    setNotification({ message, type });
+  };
+
+  const hideNotification = () => {
+    setNotification(null);
+  };
 
   // Добавление задачи
-  const handleAddTodo = (text) => {
+  const addTodo = () => {
+    if (input.trim() === '') {
+      showNotification('Введите текст задачи!', 'warning');
+      return;
+    }
+    
     const newTodo = {
       id: Date.now(),
-      text: text.trim(),
+      text: input.trim(),
       completed: false,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
     };
+    
     setTodos([newTodo, ...todos]);
+    setInput('');
+    showNotification('✅ Задача добавлена!', 'success');
   };
 
   // Переключение статуса
-  const handleToggleTodo = (id) => {
+  const toggleTodo = (id) => {
+    const todo = todos.find(t => t.id === id);
+    const isCompleting = !todo.completed;
+    
     setTodos(todos.map(todo =>
       todo.id === id ? { ...todo, completed: !todo.completed } : todo
     ));
+
+    const message = isCompleting 
+      ? '✅ Задача выполнена!' 
+      : '↩️ Задача возвращена в активные';
+    showNotification(message, 'info');
   };
 
   // Удаление задачи
-  const handleDeleteTodo = (id) => {
-    if (window.confirm('Удалить задачу?')) {
+  const deleteTodo = (id) => {
+    const taskText = todos.find(t => t.id === id)?.text || 'задача';
+    
+    if (window.confirm(`Удалить задачу "${taskText}"?`)) {
       setTodos(todos.filter(todo => todo.id !== id));
+      showNotification('🗑️ Задача удалена', 'warning');
     }
   };
 
-  // Редактирование задачи
-  const handleEditTodo = (id, newText) => {
-    setTodos(todos.map(todo =>
-      todo.id === id ? { ...todo, text: newText.trim() } : todo
-    ));
+  // Фильтрация задач
+  const getFilteredTodos = () => {
+    switch (filter) {
+      case 'active':
+        return todos.filter(todo => !todo.completed);
+      case 'completed':
+        return todos.filter(todo => todo.completed);
+      default:
+        return todos;
+    }
   };
 
   // Очистка выполненных
-  const handleClearCompleted = () => {
-    if (window.confirm('Удалить все выполненные задачи?')) {
+  const clearCompleted = () => {
+    const completedCount = todos.filter(t => t.completed).length;
+    
+    if (completedCount === 0) {
+      showNotification('Нет выполненных задач для очистки', 'info');
+      return;
+    }
+    
+    if (window.confirm(`Удалить ${completedCount} выполненных задач?`)) {
       setTodos(todos.filter(todo => !todo.completed));
+      showNotification(`🗑️ Удалено ${completedCount} выполненных задач`, 'success');
     }
   };
 
-  // Фильтрация
-  const filteredTodos = todos.filter(todo => {
-    if (filter === 'active') return !todo.completed;
-    if (filter === 'completed') return todo.completed;
-    return true;
-  });
+  // Переключение темы
+  const toggleTheme = () => {
+    const themes = ['light', 'dark', 'gradient'];
+    const currentIndex = themes.indexOf(theme);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    setTheme(themes[nextIndex]);
+  };
 
   // Статистика
   const stats = {
     total: todos.length,
     active: todos.filter(t => !t.completed).length,
-    completed: todos.filter(t => t.completed).length
+    completed: todos.filter(t => t.completed).length,
+    completionRate: todos.length > 0 ? Math.round((todos.filter(t => t.completed).length / todos.length) * 100) : 0
   };
 
+  const filteredTodos = getFilteredTodos();
+
   return (
-    <div className="App">
+    <div className="app" data-theme={theme}>
       <div className="container">
+        {/* Хедер */}
         <header className="header">
-          <h1>✅ React Todo App</h1>
-          <p className="subtitle">Управляйте задачами эффективно</p>
+          <div className="header-content">
+            <div>
+              <h1>✅ Smart Todo</h1>
+              <p className="subtitle">Умный планировщик задач</p>
+            </div>
+            <button 
+              onClick={toggleTheme}
+              className="theme-toggle"
+              title="Сменить тему"
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
+          </div>
         </header>
 
-        <main className="main-content">
-          <AddTodoForm onAdd={handleAddTodo} />
-          
+        {/* Основной контент */}
+        <main className="main">
+          {/* Форма добавления */}
+          <div className="add-form">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Что нужно сделать?"
+              onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+              className="todo-input"
+            />
+            <button onClick={addTodo} className="add-button">
+              <FaPlus /> Добавить
+            </button>
+          </div>
+
           {/* Фильтры */}
-          <div style={{ 
-            display: 'flex', 
-            gap: '10px', 
-            marginBottom: '20px',
-            flexWrap: 'wrap'
-          }}>
-            {['all', 'active', 'completed'].map(f => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                style={{
-                  padding: '8px 16px',
-                  border: `2px solid ${filter === f ? '#4361ee' : '#ddd'}`,
-                  background: filter === f ? '#4361ee' : 'white',
-                  color: filter === f ? 'white' : '#333',
-                  borderRadius: '6px',
-                  cursor: 'pointer'
-                }}
-              >
-                {f === 'all' ? 'Все' : f === 'active' ? 'Активные' : 'Выполненные'}
-                <span style={{ 
-                  marginLeft: '8px',
-                  background: filter === f ? 'rgba(255,255,255,0.2)' : '#f0f0f0',
-                  padding: '2px 8px',
-                  borderRadius: '10px',
-                  fontSize: '0.8rem'
-                }}>
-                  {f === 'all' ? stats.total : f === 'active' ? stats.active : stats.completed}
-                </span>
-              </button>
-            ))}
+          <div className="filters">
+            <button 
+              className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+              onClick={() => setFilter('all')}
+            >
+              Все ({stats.total})
+            </button>
+            <button 
+              className={`filter-btn ${filter === 'active' ? 'active' : ''}`}
+              onClick={() => setFilter('active')}
+            >
+              Активные ({stats.active})
+            </button>
+            <button 
+              className={`filter-btn ${filter === 'completed' ? 'active' : ''}`}
+              onClick={() => setFilter('completed')}
+            >
+              Выполненные ({stats.completed})
+            </button>
           </div>
 
           {/* Список задач */}
-          <div style={{ minHeight: '200px' }}>
+          <div className="todo-list">
             {filteredTodos.length === 0 ? (
-              <div style={{ 
-                textAlign: 'center', 
-                padding: '40px 20px', 
-                color: '#666' 
-              }}>
-                <p style={{ fontSize: '1.2rem' }}>
-                  {filter === 'all' ? 'Нет задач. Добавьте первую!' :
-                   filter === 'active' ? 'Нет активных задач!' :
-                   'Нет выполненных задач!'}
-                </p>
+              <div className="empty-state">
+                {filter === 'all' ? '📝 Нет задач. Добавьте первую!' :
+                 filter === 'active' ? '🎉 Нет активных задач!' :
+                 '📭 Нет выполненных задач!'}
               </div>
             ) : (
               filteredTodos.map(todo => (
-                <TodoItem
-                  key={todo.id}
-                  todo={todo}
-                  onToggle={handleToggleTodo}
-                  onDelete={handleDeleteTodo}
-                  onEdit={handleEditTodo}
-                />
+                <div 
+                  key={todo.id} 
+                  className={`todo-item ${todo.completed ? 'completed' : ''}`}
+                >
+                  <div className="todo-content">
+                    <div 
+                      className={`checkbox ${todo.completed ? 'checked' : ''}`}
+                      onClick={() => toggleTodo(todo.id)}
+                    >
+                      {todo.completed && <FaPlus size={12} style={{ transform: 'rotate(45deg)' }} />}
+                    </div>
+                    <span className="todo-text">
+                      {todo.text}
+                    </span>
+                    <button 
+                      onClick={() => deleteTodo(todo.id)}
+                      className="delete-btn"
+                      title="Удалить"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                </div>
               ))
             )}
           </div>
 
-          {/* Статистика */}
-          <div style={{ 
-            marginTop: '30px', 
-            padding: '20px', 
-            background: '#f8f9fa', 
-            borderRadius: '10px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '15px'
-          }}>
-            <div style={{ display: 'flex', gap: '30px', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <FaListAlt style={{ color: '#4361ee', fontSize: '20px' }} />
-                <div>
-                  <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{stats.total}</div>
-                  <div style={{ fontSize: '0.9rem', color: '#666' }}>Всего</div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <FaClock style={{ color: '#4361ee', fontSize: '20px' }} />
-                <div>
-                  <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{stats.active}</div>
-                  <div style={{ fontSize: '0.9rem', color: '#666' }}>Активных</div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <FaCheckCircle style={{ color: '#4361ee', fontSize: '20px' }} />
-                <div>
-                  <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{stats.completed}</div>
-                  <div style={{ fontSize: '0.9rem', color: '#666' }}>Выполнено</div>
-                </div>
+          {/* Статистика и очистка */}
+          <div className="stats">
+            <div className="stat-item">
+              <FaListAlt className="stat-icon" />
+              <div className="stat-text">
+                <span className="stat-value">{stats.total}</span>
+                <span className="stat-label">Всего</span>
               </div>
             </div>
-
-            <button
-              onClick={handleClearCompleted}
-              disabled={stats.completed === 0}
-              style={{
-                background: stats.completed === 0 ? '#f0f0f0' : 'white',
-                color: stats.completed === 0 ? '#999' : '#e71d36',
-                border: `2px solid ${stats.completed === 0 ? '#ddd' : '#e71d36'}`,
-                padding: '10px 20px',
-                borderRadius: '6px',
-                cursor: stats.completed === 0 ? 'not-allowed' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              <FaTrash /> Очистить выполненные
-            </button>
+            <div className="stat-item">
+              <FaClock className="stat-icon" />
+              <div className="stat-text">
+                <span className="stat-value">{stats.active}</span>
+                <span className="stat-label">Активных</span>
+              </div>
+            </div>
+            <div className="stat-item">
+              <FaCheckCircle className="stat-icon" />
+              <div className="stat-text">
+                <span className="stat-value">{stats.completed}</span>
+                <span className="stat-label">Выполнено</span>
+              </div>
+            </div>
+            
+            {stats.completed > 0 && (
+              <button onClick={clearCompleted} className="clear-btn">
+                <FaTrash /> Очистить выполненные
+              </button>
+            )}
           </div>
         </main>
 
-        <footer style={{ 
-          padding: '20px', 
-          textAlign: 'center', 
-          background: '#f8f9fa', 
-          borderTop: '1px solid #ddd',
-          marginTop: '30px'
-        }}>
-          <div>
-            <span style={{ color: '#4361ee', fontWeight: 'bold' }}>React</span> • 
-            <span style={{ color: '#7209b7', fontWeight: 'bold', margin: '0 10px' }}>Hooks</span> • 
-            <span style={{ color: '#2ec4b6', fontWeight: 'bold' }}>LocalStorage</span>
-          </div>
-          <div style={{ marginTop: '10px', color: '#666', fontSize: '0.9rem' }}>
-            Heathcliff • {new Date().getFullYear()}
+        {/* Футер */}
+        <footer className="footer">
+          <div className="footer-content">
+            <p>
+              <span className="tech-tag">React</span> • 
+              <span className="tech-tag">Hooks</span> • 
+              <span className="tech-tag">LocalStorage</span>
+            </p>
+            <p className="copyright">
+              Smart Todo App • {new Date().getFullYear()} • Пет-проект для стажировки
+            </p>
           </div>
         </footer>
       </div>
+
+      {/* Система уведомлений - ВОТ ТУТ ДОБАВЛЯЕМ */}
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={hideNotification}
+        />
+      )}
     </div>
   );
 }
