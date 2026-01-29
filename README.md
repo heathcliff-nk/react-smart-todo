@@ -5,7 +5,7 @@
 [![GitHub Stars](https://img.shields.io/github/stars/your-username/react-smart-todo?style=social)](https://github.com/your-username/react-smart-todo)
 [![Last Commit](https://img.shields.io/github/last-commit/your-username/react-smart-todo)](https://github.com/your-username/react-smart-todo/commits/main)
 
-> **Современное React-приложение для управления задачами с анимациями и системой уведомлений. Пет-проект для демонстрации навыков фронтенд-разработки.**
+> **Современное React-приложение для управления задачами с анимациями и системой уведомлений.**
 
 ## 🚀 Живое демо
 
