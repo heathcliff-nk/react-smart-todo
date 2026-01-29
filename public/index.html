@@ -1,43 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
+    <!-- ===== ШАГ 1: БАЗОВЫЕ НАСТРОЙКИ ===== -->
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    
+    <!-- ===== ШАГ 2: FAVICON И ИКОНКИ ===== -->
+    <!-- Основной favicon (эмодзи) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
+    
+    <!-- Альтернативные favicon для разных браузеров -->
+    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png">
+    
+    <!-- Для Apple устройств -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png">
+    
+    <!-- Manifest для PWA -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+    
+    <!-- ===== ШАГ 3: ЦВЕТ ТЕМЫ ===== -->
+    <meta name="theme-color" content="#6366f1" />
+    
+    <!-- ===== ШАГ 4: SEO ОПТИМИЗАЦИЯ ===== -->
+    <meta name="description" content="Smart Todo App - современное React-приложение для управления задачами с LocalStorage. Пет-проект для портфолио фронтенд-разработчика." />
+    <meta name="keywords" content="React, Todo App, задачи, планировщик, фронтенд, портфолио, стажировка, JavaScript" />
+    <meta name="author" content="Ваше Имя" />
+    
+    <!-- ===== ШАГ 5: OPEN GRAPH (для соцсетей) ===== -->
+    <meta property="og:title" content="Smart Todo App | React Planner" />
+    <meta property="og:description" content="Современный умный планировщик задач на React" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ваш-сайт.netlify.app" />
+    <!-- <meta property="og:image" content="%PUBLIC_URL%/og-image.png" /> -->
+    
+    <!-- ===== ШАГ 6: НАЗВАНИЕ ВКЛАДКИ ===== -->
+    <title>Smart Todo | Умный планировщик</title>
+    
+    <!-- ===== ШАГ 7: ДОПОЛНИТЕЛЬНЫЕ МЕТА-ТЕГИ ===== -->
+    <meta name="application-name" content="Smart Todo">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Smart Todo">
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <!-- Сообщение при отключенном JavaScript -->
+    <noscript>
+      <div style="
+        text-align: center; 
+        padding: 50px 20px; 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        max-width: 600px;
+        margin: 100px auto;
+        background: #f8fafc;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      ">
+        <h1 style="color: #6366f1; margin-bottom: 20px;">📱 Smart Todo App</h1>
+        <h2 style="color: #333; margin-bottom: 15px;">⚠️ Требуется JavaScript</h2>
+        <p style="color: #666; line-height: 1.6; margin-bottom: 25px;">
+          Это современное React-приложение требует включенного JavaScript для работы.
+          Пожалуйста, включите JavaScript в настройках вашего браузера.
+        </p>
+        <div style="background: #e2e8f0; padding: 15px; border-radius: 10px; text-align: left;">
+          <p style="margin: 0; font-size: 0.9em; color: #4a5568;">
+            <strong>Как включить JavaScript:</strong><br>
+            1. Нажмите F12 → вкладка "Консоль"<br>
+            2. Или настройки браузера → Конфиденциальность и безопасность<br>
+            3. Найдите настройки JavaScript и разрешите его выполнение
+          </p>
+        </div>
+      </div>
+    </noscript>
+    
+    <!-- Корневой элемент для React -->
     <div id="root"></div>
+    
     <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
+      Этот HTML файл - шаблон.
+      Приложение будет встроено в div#root.
     -->
   </body>
 </html>
